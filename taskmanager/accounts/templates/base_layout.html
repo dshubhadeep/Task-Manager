@@ -1,0 +1,29 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <title>Task Manager</title>
+
+<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+  </head>
+  <body>
+
+  <nav>
+    <ul>
+    {% if user.is_authenticated %}
+      <li>
+        <form action="{% url 'accounts:logout' %} " method='POST'>{% csrf_token %}
+        <button>LOGOUT</button></form>
+      </li>
+    {% endif %}
+    </ul>
+  </nav>
+
+  {% block content%}
+  {% endblock %}
+  </body>
+</html>
