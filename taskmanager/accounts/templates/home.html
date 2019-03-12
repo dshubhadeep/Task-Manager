@@ -1,6 +1,26 @@
 {% extends 'base_layout.html' %}
 
 {% block content %}
+<nav id="navbar" class="navbar is-dark">
+  <div class="navbar-brand">
+    <a href="#" class="navbar-item">TaskManager</a>
+    <div
+      id="navbarBurger"
+      class="navbar-burger burger"
+      data-target="burgerMenu"
+    >
+      <span></span> <span></span> <span></span>
+    </div>
+  </div>
+  <div class="navbar-menu" id="burgerMenu">
+    <div class="navbar-end">
+        <a href="{% url 'accounts:logout' %}" class="navbar-item">
+            <strong>Logout</strong> 
+        </a>
+    </div>
+  </div>
+</nav>
+
 <h1>Home</h1>
 
 <h3>Welcome to Tasks</h3>

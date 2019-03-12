@@ -1,5 +1,4 @@
 {% load static %}
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,20 +7,17 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge" />
     <title>Task Manager</title>
 
-<link rel="stylesheet" type="text/css" href="{% static 'style.css' %}">
+    <!-- CSS Links --> 
+    <link rel="stylesheet" type="text/css" href="{% static 'bulma_lux.css' %}">
+
+    <!-- JS Links -->
+    <script
+      defer
+      src="https://use.fontawesome.com/releases/v5.0.0/js/all.js"
+    ></script>
   </head>
   <body>
 
-  <nav>
-    <ul>
-    {% if user.is_authenticated %}
-      <li>
-        <form action="{% url 'accounts:logout' %} " method='POST'>{% csrf_token %}
-        <button>LOGOUT</button></form>
-      </li>
-    {% endif %}
-    </ul>
-  </nav>
 
   {% block content%}
   {% endblock %}
