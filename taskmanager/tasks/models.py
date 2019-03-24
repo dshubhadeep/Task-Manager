@@ -13,7 +13,6 @@ class Task(models.Model):
     title = models.CharField(max_length=100)
     description = models.CharField(max_length=300)
     status = models.CharField(max_length=1, choices=STATUS_CHOICES)
-    assignee = models.ForeignKey(User, default=None, on_delete=models.CASCADE)
     created_date = models.DateField(
         default=timezone.now, blank=True, null=True)
     created_by = models.ForeignKey(

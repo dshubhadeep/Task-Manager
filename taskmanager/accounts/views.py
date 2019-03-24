@@ -5,6 +5,11 @@ from django.shortcuts import redirect, render
 
 
 def register_view(request):
+
+    # Check if user is authenticated, if yes then send to home
+    if request.user.is_authenticated:
+        return redirect('accounts:home')
+
     # Handle post request
     if request.method == 'POST':
         form = UserCreationForm(request.POST)
@@ -20,6 +25,11 @@ def register_view(request):
 
 
 def login_view(request):
+
+    # Check if user is authenticated, if yes then send to home
+    if request.user.is_authenticated:
+        return redirect('accounts:home')
+
     # Handle post request
     if request.method == 'POST':
         form = AuthenticationForm(data=request.POST)
@@ -27,6 +37,9 @@ def login_view(request):
             user = form.get_user()
             login(request, user)
             # TODO Redirect based on next
+            ''' Redirect based on next param '''
+            if 'next' in request.POST:
+                return redirect(request.POST.get('next'))
 
             return redirect('accounts:home')
     else:
@@ -40,7 +53,6 @@ def logout_view(request):
     return redirect('accounts:login')
 
 
-# TODO Delete after test
 def home_view(request):
     if request.user.is_authenticated:
         return render(request, 'home.html')
