@@ -1,7 +1,10 @@
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.db.models import Q
 from django.shortcuts import redirect, render
+
+from tasks.models import Task
 
 
 def register_view(request):
@@ -36,7 +39,6 @@ def login_view(request):
         if form.is_valid():
             user = form.get_user()
             login(request, user)
-            # TODO Redirect based on next
             ''' Redirect based on next param '''
             if 'next' in request.POST:
                 return redirect(request.POST.get('next'))
@@ -53,8 +55,11 @@ def logout_view(request):
     return redirect('accounts:login')
 
 
+@login_required(login_url='accounts:login')
 def home_view(request):
-    if request.user.is_authenticated:
-        return render(request, 'home.html')
-    else:
-        return redirect('accounts:login')
+
+    # Get tasks assigned / created to user
+    tasks = Task.objects.filter(
+        Q(created_by=request.user) | Q(assigned_to=request.user))
+
+    return render(request, 'home.html', {'tasks': tasks})
