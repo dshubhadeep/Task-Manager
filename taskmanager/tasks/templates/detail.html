@@ -1,0 +1,78 @@
+{% extends 'base_layout.html' %}
+
+{% block content %}
+
+{% include "navbar.html" %}
+
+    <div class="columns" style="margin-top:10px;padding : 15px;">
+        <div class="column"></div>
+        <div class="column">
+            <h1 class="title is-3 has-text-centered">{{task.title}}</h1>
+            <hr>
+            <form method="POST" action="{% url 'tasks:edit' %}">
+            {% csrf_token %}
+
+            <input type="hidden" value="{{task.id}}" name="task_id">
+
+            <!-- TASK TITLE-->
+            <div class="field" >
+                <label class="label">Title</label>
+                <div class="control">
+                    <input class="input" type="text" placeholder="Task title" name="title" value ="{{task.title}}" required>
+                </div>
+            </div>
+
+            <!-- DESCRIPTION -->
+            <div class="field">
+                <label class="label">Description</label>
+                <div class="control">
+                    <textarea class="textarea" placeholder="Task description" name="description">{{task.description}}</textarea>
+                </div>
+            </div>
+
+           <!-- STATUS -->
+            <div class="field">
+                <label for="" class="label">Status</label>
+                <div class="control">
+                    <div class="select is-fullwidth">
+                        <select name="status" required>
+                            {% for val,status in statuses %}
+                                <option 
+                                {% if  val == task.status %}selected="selected"{% endif %}
+                                value="{{val}}">{{status}}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ASSIGNEE -->
+            <div class="field">
+                <label for="" class="label">Assigned To</label>
+                <div class="control">
+                    <div class="select is-fullwidth">
+                        <select name="assignee" required>
+                            {% for user in users %}
+                                <option 
+                                {% if user == task.assigned_to %}selected="selected"{% endif %}
+                                value="{{ user.username }}"
+                                >
+                                    {{ user.username }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div style="text-align:center;margin-top:20px;">
+                <input class="button is-info is-outlined" type="submit" value="EDIT" >
+            </div>
+
+            </form>
+
+        </div>
+        <div class="column"></div>
+    </div>
+
+{% endblock %}

@@ -26,7 +26,9 @@
                         {% for task in tasks %}
                         <tr>
                             <td>{{forloop.counter}}</td>
-                            <td>{{task.title}}</td>
+                            <td>
+                                <a href="{% url 'tasks:detail' task.id %}" style="color:#363636;">{{task.title}}</a>
+                            </td>
                             <td>{{task.assigned_to}}</td>
                             <td>{{task.created_by}}</td>
                         </tr>
