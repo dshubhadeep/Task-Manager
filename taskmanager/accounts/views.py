@@ -1,10 +1,12 @@
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
+from django.contrib.auth.models import User
 from django.db.models import Q
 from django.shortcuts import redirect, render
 
 from tasks.models import Task
+from .models import Team
 
 
 def register_view(request):
@@ -62,4 +64,32 @@ def home_view(request):
     tasks = Task.objects.filter(
         Q(created_by=request.user) | Q(assigned_to=request.user))
 
-    return render(request, 'home.html', {'tasks': tasks})
+    # Get teams of user
+    teams = request.user.team_set.all()
+
+    return render(request, 'home.html', {'tasks': tasks, 'teams': teams})
+
+
+def create_team(request):
+
+    if request.method == "POST":
+        members_list = request.POST.getlist("members")
+        team_name = request.POST.get("team_name")
+
+        team = Team.objects.create(
+            team_name=team_name, created_by=request.user)
+
+        for member in members_list:
+            team.members.add(User.objects.get(username=member))
+
+        # Add creator to members
+        team.members.add(request.user)
+
+        team.save()
+
+        # print(members)
+        return redirect('accounts:home')
+
+    users = User.objects.all().exclude(username=request.user.username)
+
+    return render(request, "create_team.html", {'users': users})

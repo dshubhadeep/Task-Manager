@@ -4,8 +4,8 @@ from django.contrib.auth.models import User
 
 class Team(models.Model):
     team_name = models.CharField(max_length=50)
-    created_by = models.ManyToManyField(User)
-    members = models.ForeignKey(
+    members = models.ManyToManyField(User)
+    created_by = models.ForeignKey(
         User, null=True, on_delete=models.CASCADE, related_name='team_created_by')
 
     def __str__(self):

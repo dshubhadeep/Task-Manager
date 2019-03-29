@@ -42,6 +42,29 @@
             {% endif %}
 
         </div>
+        <div class="column"></div>
+        <div class="column is-4">
+            <h1 class="title is-4">Your Teams <a href="{% url 'accounts:create_team' %}" style="margin-left:5px;"><i class="far fa-plus-square fa-sm"></i></a></h1>
+            <hr>
+            <table class="table is-striped  is-hoverable is-fullwidth">
+                    <thead>
+                        <tr>
+                            <th>Team</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for team in teams %}
+                        <tr>
+                            <td>
+                                <a href="#" style="color:#363636;">{{team.team_name}}</a>
+                            </td>
+                            <td><a href="#" class="button is-small is-outlined is-info">View</a></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+        </div>
     </div>
 </div>
 {% endblock %}
