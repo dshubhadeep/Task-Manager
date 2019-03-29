@@ -5,9 +5,9 @@ from django.utils import timezone
 
 class Task(models.Model):
     STATUS_CHOICES = (
-        ('P', 'Planned'),
-        ('O', 'Ongoing'),
-        ('D', 'Done')
+        ('Planned', 'Planned'),
+        ('Ongoing', 'Ongoing'),
+        ('Done', 'Done')
     )
 
     title = models.CharField(max_length=100)

@@ -39,7 +39,7 @@ def detail(request, task_id):
 
     users = User.objects.all()
 
-    statuses = [('P', 'Planned'), ('O', 'Ongoing'), ('D', 'Done')]
+    statuses = ['Planned', 'Ongoing', 'Done']
 
     return render(request, "detail.html", {
         "id": task_id, "task": task,
