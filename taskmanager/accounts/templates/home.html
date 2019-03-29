@@ -18,8 +18,10 @@
                         <tr>
                             <th>Sr. No</th>
                             <th>Task</th>
+                            <th>Status</th>
                             <th>Assignee</th>
                             <th>Created by</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -29,8 +31,10 @@
                             <td>
                                 <a href="{% url 'tasks:detail' task.id %}" style="color:#363636;">{{task.title}}</a>
                             </td>
+                            <td>{{task.status}}</td>
                             <td>{{task.assigned_to}}</td>
                             <td>{{task.created_by}}</td>
+                            <td><a href="{% url 'tasks:delete' task.id %}" class="button is-small is-outlined is-danger">Delete</a></td>
                         </tr>
                         {% endfor %}
                     </tbody>

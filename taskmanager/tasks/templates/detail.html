@@ -65,9 +65,11 @@
                 </div>
             </div>
 
-            <div style="text-align:center;margin-top:20px;">
-                <input class="button is-info is-outlined" type="submit" value="EDIT" >
-            </div>
+            {% if task.created_by == request.user %}
+                <div style="text-align:center;margin-top:20px;">
+                    <input class="button is-info is-outlined" type="submit" value="EDIT">
+                </div>                
+            {% endif %}
 
             </form>
 

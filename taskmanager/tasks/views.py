@@ -31,6 +31,12 @@ def create_task(request):
 def detail(request, task_id):
 
     task = Task.objects.get(pk=task_id)
+
+    # TODO Team viewing
+    ''' Check whether user can view details of another task '''
+    if request.user != task.created_by and request.user != task.assigned_to:
+        return redirect('accounts:home')
+
     users = User.objects.all()
 
     statuses = [('P', 'Planned'), ('O', 'Ongoing'), ('D', 'Done')]
@@ -45,6 +51,7 @@ def detail(request, task_id):
 def edit(request):
 
     if request.method == 'POST':
+        task = Task.objects.get(pk=request.POST.get("task_id"))
         title = request.POST.get('title')
         description = request.POST.get('description')
         status = request.POST.get('status')
@@ -52,7 +59,6 @@ def edit(request):
         assignee = request.POST.get('assignee')
         assigned_to = User.objects.get(username=assignee)
 
-        task = Task.objects.get(pk=request.POST.get("task_id"))
         task.title = title
         task.description = description
         task.assigned_to = assigned_to
@@ -61,4 +67,10 @@ def edit(request):
 
         return redirect('accounts:home')
 
+    return redirect('accounts:home')
+
+
+@login_required(login_url='accounts:login')
+def delete(request, task_id):
+    Task.objects.get(pk=task_id).delete()
     return redirect('accounts:home')
