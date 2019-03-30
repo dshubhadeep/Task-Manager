@@ -2,76 +2,89 @@
 
 {% block content %}
 
-{% include "navbar.html" %}
+    {% include "navbar.html" %}
 
     <div class="columns" style="margin-top:10px;padding : 15px;">
         <div class="column"></div>
         <div class="column">
-            <h1 class="title is-3 has-text-centered">{{task.title}}</h1>
+            <h1 class="title is-3 has-text-centered">{{ task.title }}</h1>
             <hr>
             <form method="POST" action="{% url 'tasks:edit' %}">
-            {% csrf_token %}
+                {% csrf_token %}
 
-            <input type="hidden" value="{{task.id}}" name="task_id">
+                <input type="hidden" value="{{ task.id }}" name="task_id">
 
-            <!-- TASK TITLE-->
-            <div class="field" >
-                <label class="label">Title</label>
-                <div class="control">
-                    <input class="input" type="text" placeholder="Task title" name="title" value ="{{task.title}}" required {% if task.created_by != request.user %}disabled="disabled"{% endif %}>
-                </div>
-            </div>
-
-            <!-- DESCRIPTION -->
-            <div class="field">
-                <label class="label">Description</label>
-                <div class="control">
-                    <textarea class="textarea" placeholder="Task description" name="description" {% if task.created_by != request.user %}disabled="disabled"{% endif %}>{{task.description}}</textarea>
-                </div>
-            </div>
-
-           <!-- STATUS -->
-            <div class="field">
-                <label for="" class="label">Status</label>
-                <div class="control">
-                    <div class="select is-fullwidth">
-                        <select name="status" required
-                        {% if task.created_by != request.user %}disabled="disabled"{% endif %}>
-                            {% for status in statuses %}
-                                <option 
-                                {% if  status == task.status %}selected="selected"{% endif %}
-                                value="{{status}}">{{status}}</option>
-                            {% endfor %}
-                        </select>
+                <!-- TASK TITLE-->
+                <div class="field">
+                    <label class="label">Title</label>
+                    <div class="control">
+                        <input class="input" type="text" placeholder="Task title" name="title" value="{{ task.title }}"
+                               required {% if task.created_by != request.user %}disabled="disabled"{% endif %}>
                     </div>
                 </div>
-            </div>
 
-            <!-- ASSIGNEE -->
-            <div class="field">
-                <label for="" class="label">Assigned To</label>
-                <div class="control">
-                    <div class="select is-fullwidth">
-                        <select name="assignee" required 
-                        {% if task.created_by != request.user %}disabled="disabled"{% endif %}>
-                            {% for user in users %}
-                                <option 
-                                {% if user == task.assigned_to %}selected="selected"{% endif %}
-                                value="{{ user.username }}"
-                                >
-                                    {{ user.username }}
-                                </option>
-                            {% endfor %}
-                        </select>
+                <!-- DESCRIPTION -->
+                <div class="field">
+                    <label class="label">Description</label>
+                    <div class="control">
+                        <textarea class="textarea" placeholder="Task description" name="description"
+                                  {% if task.created_by != request.user %}disabled="disabled"{% endif %}>{{ task.description }}</textarea>
                     </div>
                 </div>
-            </div>
 
-            {% if task.created_by == request.user %}
-                <div style="text-align:center;margin-top:20px;">
-                    <input class="button is-info is-outlined" type="submit" value="EDIT">
-                </div>                
-            {% endif %}
+                <!-- STATUS -->
+                <div class="field">
+                    <label for="" class="label">Status</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="status" required
+                                    {% if task.created_by != request.user %}disabled="disabled"{% endif %}>
+                                {% for status in statuses %}
+                                    <option
+                                            {% if  status == task.status %}selected="selected"{% endif %}
+                                            value="{{ status }}">{{ status }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                {% if task.team %}
+                    <!-- TASK TITLE-->
+                    <div class="field">
+                        <label class="label">Team</label>
+                        <div class="control">
+                            <input class="input" type="text" placeholder="Team" name="team_id"
+                                   value="{{ task.team }}" required disabled>
+                        </div>
+                    </div>
+                {% endif %}
+
+                <!-- ASSIGNEE -->
+                <div class="field">
+                    <label for="" class="label">Assigned To</label>
+                    <div class="control">
+                        <div class="select is-fullwidth">
+                            <select name="assignee" required
+                                    {% if task.created_by != request.user %}disabled="disabled"{% endif %}>
+                                {% for user in users %}
+                                    <option
+                                            {% if user == task.assigned_to %}selected="selected"{% endif %}
+                                            value="{{ user.username }}"
+                                    >
+                                        {{ user.username }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                {% if task.created_by == request.user %}
+                    <div style="text-align:center;margin-top:20px;">
+                        <input class="button is-info is-outlined" type="submit" value="EDIT">
+                    </div>
+                {% endif %}
 
             </form>
 

@@ -59,7 +59,7 @@ def logout_view(request):
 def home_view(request):
     # Get tasks assigned / created to user
     tasks = Task.objects.filter(
-        Q(created_by=request.user) | Q(assigned_to=request.user))
+        Q(created_by=request.user) | Q(assigned_to=request.user)).order_by('title')
 
     # Get teams of user
     teams = request.user.team_set.all()
@@ -97,7 +97,9 @@ def team_detail(request, team_id):
 
     users = User.objects.all()
 
-    return render(request, 'team_detail.html', {'team': team, 'users': users})
+    tasks = Task.objects.filter(team=team)
+
+    return render(request, 'team_detail.html', {'team': team, 'users': users, 'tasks': tasks})
 
 
 def add_team_member(request):

@@ -1,8 +1,10 @@
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
+from django.contrib import messages
 
 from .models import Task
+from tasks.models import Team
 
 
 @login_required(login_url='accounts:login')
@@ -17,6 +19,13 @@ def create_task(request):
 
         task = Task(title=title, description=description,
                     assigned_to=assigned_to, status=status, created_by=request.user)
+
+        team_id = request.POST.get('team_id', None)
+
+        if team_id is not None:
+            team = Team.objects.get(pk=team_id)
+            task.team = team
+
         task.save()
 
         return redirect('accounts:home')
@@ -26,10 +35,10 @@ def create_task(request):
 
     return render(request, 'create.html', {'users': users})
 
+
 # TODO Viewing permission
 @login_required(login_url='accounts:login')
 def detail(request, task_id):
-
     task = Task.objects.get(pk=task_id)
 
     # TODO Team viewing
@@ -49,7 +58,6 @@ def detail(request, task_id):
 
 @login_required(login_url='accounts:login')
 def edit(request):
-
     if request.method == 'POST':
         task = Task.objects.get(pk=request.POST.get("task_id"))
         title = request.POST.get('title')
@@ -72,5 +80,15 @@ def edit(request):
 
 @login_required(login_url='accounts:login')
 def delete(request, task_id):
-    Task.objects.get(pk=task_id).delete()
+
+    task = Task.objects.get(pk=task_id)
+
+    if task:
+        if request.user == task.created_by:
+            task.delete()
+        else:
+            messages.error(request, "Only task creator can delete task.")
+    else:
+        messages.error(request, "Task doesn't exist")
+
     return redirect('accounts:home')
