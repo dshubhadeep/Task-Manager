@@ -22,6 +22,7 @@
                             <th>Assignee</th>
                             <th>Created by</th>
                             <th></th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -34,6 +35,7 @@
                             <td>{{task.status}}</td>
                             <td>{{task.assigned_to}}</td>
                             <td>{{task.created_by}}</td>
+                            <td><a href="{% url 'tasks:detail' task.id %}" class="button is-small is-outlined is-info">View</a></td>
                             <td><a href="{% url 'tasks:delete' task.id %}" class="button is-small is-outlined is-danger">Delete</a></td>
                         </tr>
                         {% endfor %}
@@ -46,24 +48,35 @@
         <div class="column is-4">
             <h1 class="title is-4">Your Teams <a href="{% url 'accounts:create_team' %}" style="margin-left:5px;"><i class="far fa-plus-square fa-sm"></i></a></h1>
             <hr>
+
+            {% if teams|length == 0 %}
+                <p class="subtitle is-5 has-text-centered">No teams found.</p>
+            {% else %}
             <table class="table is-striped  is-hoverable is-fullwidth">
-                    <thead>
-                        <tr>
-                            <th>Team</th>
-                            <th></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for team in teams %}
-                        <tr>
-                            <td>
-                                <a href="#" style="color:#363636;">{{team.team_name}}</a>
-                            </td>
-                            <td><a href="#" class="button is-small is-outlined is-info">View</a></td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+                <thead>
+                    <tr>
+                        <th>Team</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for team in teams %}
+                    <tr>
+                        <td>
+                            {{team.team_name}}
+                        </td>
+                        <td>
+                            <a 
+                            href="{% url 'accounts:team_detail' team.id %}" 
+                            class="button is-small is-outlined is-info">
+                            View
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {%endif%}
         </div>
     </div>
 </div>

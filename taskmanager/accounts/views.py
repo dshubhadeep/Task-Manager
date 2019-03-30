@@ -10,7 +10,6 @@ from .models import Team
 
 
 def register_view(request):
-
     # Check if user is authenticated, if yes then send to home
     if request.user.is_authenticated:
         return redirect('accounts:home')
@@ -30,7 +29,6 @@ def register_view(request):
 
 
 def login_view(request):
-
     # Check if user is authenticated, if yes then send to home
     if request.user.is_authenticated:
         return redirect('accounts:home')
@@ -59,7 +57,6 @@ def logout_view(request):
 
 @login_required(login_url='accounts:login')
 def home_view(request):
-
     # Get tasks assigned / created to user
     tasks = Task.objects.filter(
         Q(created_by=request.user) | Q(assigned_to=request.user))
@@ -71,7 +68,6 @@ def home_view(request):
 
 
 def create_team(request):
-
     if request.method == "POST":
         members_list = request.POST.getlist("members")
         team_name = request.POST.get("team_name")
@@ -92,4 +88,26 @@ def create_team(request):
 
     users = User.objects.all().exclude(username=request.user.username)
 
-    return render(request, "create_team.html", {'users': users})
+    return render(request, 'create_team.html', {'users': users})
+
+
+@login_required(login_url='accounts:login')
+def team_detail(request, team_id):
+    team = Team.objects.get(pk=team_id)
+
+    users = User.objects.all()
+
+    return render(request, 'team_detail.html', {'team': team, 'users': users})
+
+
+def add_team_member(request):
+    if request.method == 'POST':
+        team = Team.objects.get(pk=request.POST.get('team_id'))
+
+        members = request.POST.getlist('members')
+
+        for member in members:
+            team.members.add(User.objects.get(username=member))
+
+        return redirect('accounts:team_detail',
+                        team_id=request.POST.get('team_id'))

@@ -1,6 +1,6 @@
 <nav id="navbar" class="navbar is-dark">
   <div class="navbar-brand">
-    <a href="{% url 'accounts:home' %}" class="navbar-item">TaskManager</a>
+    <a href="{% url 'accounts:home' %}" class="navbar-item">{{request.user}}</a>
     <div
       id="navbarBurger"
       class="navbar-burger burger"
