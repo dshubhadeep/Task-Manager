@@ -123,7 +123,7 @@
                                 <td>{{ forloop.counter }}</td>
                                 <td>
                                     <a href="{% url 'tasks:detail' task.id %}"
-                                       style="color:#363636;">{{ task.title }}</a>
+                                       style="color:#363636;">{{ task.title | truncatechars:15 }}</a>
                                 </td>
                                 <td>{{ task.status }}</td>
                                 <td>{{ task.assigned_to }}</td>

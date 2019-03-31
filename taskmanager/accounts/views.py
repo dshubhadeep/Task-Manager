@@ -57,12 +57,12 @@ def logout_view(request):
 
 @login_required(login_url='accounts:login')
 def home_view(request):
-    # Get tasks assigned / created to user
-    tasks = Task.objects.filter(
-        Q(created_by=request.user) | Q(assigned_to=request.user)).order_by('title')
-
     # Get teams of user
     teams = request.user.team_set.all()
+
+    # Get tasks assigned / created to user
+    tasks = Task.objects.filter(
+        Q(created_by=request.user) | Q(assigned_to=request.user) | Q(team__in=teams)).order_by('title')
 
     return render(request, 'home.html', {'tasks': tasks, 'teams': teams})
 

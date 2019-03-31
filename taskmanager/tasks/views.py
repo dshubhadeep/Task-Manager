@@ -3,7 +3,7 @@ from django.contrib.auth.models import User
 from django.shortcuts import redirect, render
 from django.contrib import messages
 
-from .models import Task
+from .models import Task, Comment
 from tasks.models import Team
 
 
@@ -28,31 +28,44 @@ def create_task(request):
 
         task.save()
 
+        '''
+        If request from team page, then redirect back to team
+        '''
+        if team_id is not None:
+            return redirect('accounts:team_detail', team_id=team_id)
+
         return redirect('accounts:home')
 
-    # TODO Get users based on team
     users = User.objects.all()
 
     return render(request, 'create.html', {'users': users})
 
 
-# TODO Viewing permission
 @login_required(login_url='accounts:login')
 def detail(request, task_id):
     task = Task.objects.get(pk=task_id)
+    team = task.team
 
-    # TODO Team viewing
-    ''' Check whether user can view details of another task '''
-    if request.user != task.created_by and request.user != task.assigned_to:
-        return redirect('accounts:home')
+    if team is None:
+        ''' Check whether user can view details of another task '''
+        if request.user != task.created_by and request.user != task.assigned_to:
+            messages.error(request,"You can't view this task")
+            return redirect('accounts:home')
+    else:
+        if request.user not in team.members.all():
+            messages.error(request,"You can't view this task")
+            return redirect('accounts:home')
 
     users = User.objects.all()
+
+    comments = Comment.objects.filter(task=task)
 
     statuses = ['Planned', 'Ongoing', 'Done']
 
     return render(request, "detail.html", {
         "id": task_id, "task": task,
-        "users": users, "statuses": statuses
+        "users": users, "statuses": statuses,
+        "comments": comments
     })
 
 
@@ -80,7 +93,6 @@ def edit(request):
 
 @login_required(login_url='accounts:login')
 def delete(request, task_id):
-
     task = Task.objects.get(pk=task_id)
 
     if task:
@@ -92,3 +104,37 @@ def delete(request, task_id):
         messages.error(request, "Task doesn't exist")
 
     return redirect('accounts:home')
+
+
+@login_required()
+def post_comment(request, task_id):
+    task = Task.objects.get(pk=task_id)
+
+    if request.method == 'POST':
+        body = request.POST.get("comment")
+        team_id = request.POST.get("team_id", None)
+
+        flag = False
+
+        # If team is none, check if user created/assigned task
+        if team_id is None:
+            if request.user == task.created_by or request.user == task.assigned_to:
+                flag = True
+            else:
+                messages.error(request, "You can't comment on this task")
+        else:
+            team = Team.objects.get(pk=team_id)
+            # Check if user is present in team
+            if request.user in team.members.all():
+                flag = True
+            else:
+                messages.error(
+                    request, "Only team members can comment on this task")
+
+        if flag:
+            comment = Comment(body=body, author=request.user, task=task)
+            comment.save()
+
+        # print(body)
+
+    return redirect('tasks:detail', task_id=task_id)
