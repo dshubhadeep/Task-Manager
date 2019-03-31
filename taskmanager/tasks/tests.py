@@ -166,9 +166,9 @@ class ViewsTestClass(TestCase):
         task.delete()
 
     def test_edit_task_view_GET(self):
-        '''
+        """
         Check view without login
-        '''
+        """
         response = self.client.get(self.edit_task_url, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'login.html')
