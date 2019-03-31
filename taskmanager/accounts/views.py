@@ -67,6 +67,7 @@ def home_view(request):
     return render(request, 'home.html', {'tasks': tasks, 'teams': teams})
 
 
+@login_required()
 def create_team(request):
     if request.method == "POST":
         members_list = request.POST.getlist("members")
@@ -102,14 +103,24 @@ def team_detail(request, team_id):
     return render(request, 'team_detail.html', {'team': team, 'users': users, 'tasks': tasks})
 
 
+@login_required()
 def add_team_member(request):
     if request.method == 'POST':
-        team = Team.objects.get(pk=request.POST.get('team_id'))
+        team_id = request.POST.get('team_id', None)
 
-        members = request.POST.getlist('members')
+        if team_id is not None:
+            try:
+                team = Team.objects.get(pk=team_id)
+            except Team.DoesNotExist:
+                return redirect('accounts:home')
+        else:
+            return redirect('accounts:home')
 
-        for member in members:
-            team.members.add(User.objects.get(username=member))
+        members = request.POST.getlist('members', None)
 
-        return redirect('accounts:team_detail',
-                        team_id=request.POST.get('team_id'))
+        if members is not None:
+            for member in members:
+                team.members.add(User.objects.get(username=member))
+
+    return redirect('accounts:team_detail',
+                    team_id=request.POST.get('team_id'))
