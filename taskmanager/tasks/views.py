@@ -13,19 +13,19 @@ def create_task(request):
         title = request.POST.get('title')
         description = request.POST.get('description')
         status = request.POST.get('status')
-        # TODO Add multiple assignees
         assignees = request.POST.getlist('assignee')
 
         task = Task(title=title, description=description,
-                     status=status, created_by=request.user)
-
-
+                    status=status, created_by=request.user)
 
         team_id = request.POST.get('team_id', None)
 
         if team_id is not None:
-            team = Team.objects.get(pk=team_id)
-            task.team = team
+            try:
+                team = Team.objects.get(pk=team_id)
+                task.team = team
+            except Team.DoesNotExist:
+                return redirect('accounts:home')
 
         task.save()
 
@@ -49,17 +49,21 @@ def create_task(request):
 
 @login_required(login_url='accounts:login')
 def detail(request, task_id):
-    task = Task.objects.get(pk=task_id)
+    try:
+        task = Task.objects.get(pk=task_id)
+    except Task.DoesNotExist:
+        return redirect('accounts:home')
+
     team = task.team
 
     if team is None:
         ''' Check whether user can view details of another task '''
         if request.user != task.created_by and request.user not in task.assigned_to.all():
-            messages.error(request,"You can't view this task")
+            messages.error(request, "You can't view this task")
             return redirect('accounts:home')
     else:
         if request.user not in team.members.all():
-            messages.error(request,"You can't view this task")
+            messages.error(request, "You can't view this task")
             return redirect('accounts:home')
 
     users = User.objects.all()
@@ -78,11 +82,15 @@ def detail(request, task_id):
 @login_required(login_url='accounts:login')
 def edit(request):
     if request.method == 'POST':
-        task = Task.objects.get(pk=request.POST.get("task_id"))
+        try:
+            task = Task.objects.get(pk=request.POST.get("task_id"))
+        except Task.DoesNotExist:
+            messages.error(request, "Task not found")
+            return redirect('accounts:home')
+
         title = request.POST.get('title')
         description = request.POST.get('description')
         status = request.POST.get('status')
-        # TODO Add multiple assignees
         assignees = request.POST.getlist('assignee')
 
         task.title = title
@@ -101,7 +109,11 @@ def edit(request):
 
 @login_required(login_url='accounts:login')
 def delete(request, task_id):
-    task = Task.objects.get(pk=task_id)
+    try:
+        task = Task.objects.get(pk=task_id)
+    except Task.DoesNotExist:
+        messages.error(request, "Task doesn't exist")
+        return redirect('accounts:home')
 
     if task:
         if request.user == task.created_by:
@@ -116,7 +128,11 @@ def delete(request, task_id):
 
 @login_required()
 def post_comment(request, task_id):
-    task = Task.objects.get(pk=task_id)
+    try:
+        task = Task.objects.get(pk=task_id)
+    except Task.DoesNotExist:
+        messages.error(request, "Task doesn't exist")
+        return redirect('accounts:home')
 
     if request.method == 'POST':
         body = request.POST.get("comment")
