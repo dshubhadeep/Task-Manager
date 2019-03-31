@@ -60,7 +60,12 @@
                                 </td>
                                 <td>{{ task.status }}</td>
                                 <td>{{ task.team }}</td>
-                                <td>{{ task.assigned_to }}</td>
+                                <td>
+                                    {% for assignee in task.assigned_to.all %}
+                                        {% if not forloop.first %}, {% endif %}
+                                        {{ assignee | title }}
+                                    {% endfor %}
+                                </td>
                                 <td>{{ task.created_by }}</td>
                                 <td><a href="{% url 'tasks:detail' task.id %}"
                                        class="button is-small is-outlined is-info">View</a></td>

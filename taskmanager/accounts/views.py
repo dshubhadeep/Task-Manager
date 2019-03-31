@@ -62,7 +62,7 @@ def home_view(request):
 
     # Get tasks assigned / created to user
     tasks = Task.objects.filter(
-        Q(created_by=request.user) | Q(assigned_to=request.user) | Q(team__in=teams)).order_by('title')
+        Q(created_by=request.user) | Q(assigned_to=request.user) | Q(team__in=teams)).order_by('title').distinct()
 
     return render(request, 'home.html', {'tasks': tasks, 'teams': teams})
 

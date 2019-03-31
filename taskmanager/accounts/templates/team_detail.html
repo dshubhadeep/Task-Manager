@@ -83,20 +83,16 @@
                     <!-- ASSIGNEE -->
                     <div class="field">
                         <label for="" class="label">Assigned To</label>
-                        <div class="control">
-                            <div class="select is-fullwidth">
-                                <select name="assignee" required>
-                                    {% for member in team.members.all %}
-                                        <option value={{ member }}>
-                                            {{ member }}
-                                        </option>
-                                    {% endfor %}
-                                </select>
-                            </div>
+                        <div class="select is-multiple is-fullwidth">
+                            <select name="assignee" id="assignee" multiple>
+                                {% for member in team.members.all %}
+                                    <option value="{{ member }}">{{ member | title }}</option>
+                                {% endfor %}
+                            </select>
                         </div>
                     </div>
 
-                    <div style="text-align:center;margin-top:20px;">
+                    <div style="text-align:center;margin-top:120px;">
                         <input class="button is-primary is-outlined" type="submit" value="CREATE">
                     </div>
                 </form>
@@ -126,7 +122,12 @@
                                        style="color:#363636;">{{ task.title | truncatechars:15 }}</a>
                                 </td>
                                 <td>{{ task.status }}</td>
-                                <td>{{ task.assigned_to }}</td>
+                                <td>
+                                    {% for assignee in task.assigned_to.all %}
+                                        {% if not forloop.first %}, {% endif %}
+                                        {{ assignee | title }}
+                                    {% endfor %}
+                                </td>
                                 <td>{{ task.created_by }}</td>
                                 <td><a href="{% url 'tasks:detail' task.id %}"
                                        class="button is-small is-outlined is-info">View</a></td>

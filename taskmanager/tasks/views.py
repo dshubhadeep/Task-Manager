@@ -14,17 +14,23 @@ def create_task(request):
         description = request.POST.get('description')
         status = request.POST.get('status')
         # TODO Add multiple assignees
-        assignee = request.POST.get('assignee')
-        assigned_to = User.objects.get(username=assignee)
+        assignees = request.POST.getlist('assignee')
 
         task = Task(title=title, description=description,
-                    assigned_to=assigned_to, status=status, created_by=request.user)
+                     status=status, created_by=request.user)
+
+
 
         team_id = request.POST.get('team_id', None)
 
         if team_id is not None:
             team = Team.objects.get(pk=team_id)
             task.team = team
+
+        task.save()
+
+        for assignee in assignees:
+            task.assigned_to.add(User.objects.get(username=assignee))
 
         task.save()
 
@@ -48,7 +54,7 @@ def detail(request, task_id):
 
     if team is None:
         ''' Check whether user can view details of another task '''
-        if request.user != task.created_by and request.user != task.assigned_to:
+        if request.user != task.created_by and request.user not in task.assigned_to.all():
             messages.error(request,"You can't view this task")
             return redirect('accounts:home')
     else:
@@ -77,13 +83,15 @@ def edit(request):
         description = request.POST.get('description')
         status = request.POST.get('status')
         # TODO Add multiple assignees
-        assignee = request.POST.get('assignee')
-        assigned_to = User.objects.get(username=assignee)
+        assignees = request.POST.getlist('assignee')
 
         task.title = title
         task.description = description
-        task.assigned_to = assigned_to
         task.status = status
+
+        for assignee in assignees:
+            task.assigned_to.add(User.objects.get(username=assignee))
+
         task.save()
 
         return redirect('accounts:home')
@@ -118,7 +126,7 @@ def post_comment(request, task_id):
 
         # If team is none, check if user created/assigned task
         if team_id is None:
-            if request.user == task.created_by or request.user == task.assigned_to:
+            if request.user == task.created_by or request.user in task.assigned_to.all():
                 flag = True
             else:
                 messages.error(request, "You can't comment on this task")

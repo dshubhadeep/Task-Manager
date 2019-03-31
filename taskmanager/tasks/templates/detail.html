@@ -84,23 +84,32 @@
                     <label for="" class="label">Assigned To</label>
                     <div class="control">
                         <div class="select is-fullwidth">
-                            <select name="assignee" required
-                                    {% if task.created_by != request.user %}disabled="disabled"{% endif %}>
-                                {% for user in users %}
-                                    <option
-                                            {% if user == task.assigned_to %}selected="selected"{% endif %}
-                                            value="{{ user.username }}"
-                                    >
-                                        {{ user.username }}
-                                    </option>
-                                {% endfor %}
+                            <select name="assignee" id="assignee"
+                                    multiple required
+                                    {% if task.created_by != request.user %}disabled="disabled"{% endif %}
+                            >
+                                {% if task.team %}
+                                    {% for member in task.team.members.all %}
+                                        <option value="{{ member }}"
+                                                {% if member in task.assigned_to.all %}selected{% endif %}>
+                                            {{ member | title }}
+                                        </option>
+                                    {% endfor %}
+                                {% else %}
+                                    {% for user in users %}
+                                        <option value="{{ user }}"
+                                                {% if user in task.assigned_to.all %}selected{% endif %}>
+                                            {{ user | title }}
+                                        </option>
+                                    {% endfor %}
+                                {% endif %}
                             </select>
                         </div>
                     </div>
                 </div>
 
                 {% if task.created_by == request.user %}
-                    <div style="text-align:center;margin-top:20px;">
+                    <div style="text-align:center;margin-top:120px;">
                         <input class="button is-info is-outlined" type="submit" value="EDIT">
                     </div>
                 {% endif %}

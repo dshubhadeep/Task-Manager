@@ -19,8 +19,9 @@ class Task(models.Model):
         default=timezone.now, blank=True, null=True)
     created_by = models.ForeignKey(
         User, null=True, related_name='task_created_by', on_delete=models.CASCADE)
-    assigned_to = models.ForeignKey(
-        User, blank=True, null=True, related_name='task_assigned_to', on_delete=models.CASCADE)
+    # assigned_to = models.ForeignKey(
+    #     User, blank=True, null=True, related_name='task_assigned_to', on_delete=models.CASCADE)
+    assigned_to = models.ManyToManyField(User, related_name='task_assigned_to')
     team = models.ForeignKey(Team, null=True, on_delete=models.CASCADE)
 
     def __str__(self):
