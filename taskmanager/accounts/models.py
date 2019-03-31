@@ -12,4 +12,4 @@ class Team(models.Model):
         return self.team_name
 
     class Meta:
-        ordering = ('team_name', )
+        ordering = ('team_name',)
