@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
@@ -6,6 +7,7 @@ from django.db.models import Q
 from django.shortcuts import redirect, render
 
 from tasks.models import Task
+
 from .models import Team
 
 
@@ -94,7 +96,16 @@ def create_team(request):
 
 @login_required(login_url='accounts:login')
 def team_detail(request, team_id):
-    team = Team.objects.get(pk=team_id)
+    try:
+        team = Team.objects.get(pk=team_id)
+    except Team.DoesNotExist:
+        messages.error(request, "Team doesn't exist")
+        return redirect('accounts:home')
+
+    if request.user not in team.members.all():
+        messages.error(
+            request, "You are not allowed to view this team's details.")
+        return redirect('accounts:home')
 
     users = User.objects.all()
 

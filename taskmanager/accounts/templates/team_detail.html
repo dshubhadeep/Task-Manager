@@ -86,7 +86,9 @@
                         <div class="select is-multiple is-fullwidth">
                             <select name="assignee" id="assignee" multiple>
                                 {% for member in team.members.all %}
-                                    <option value="{{ member }}">{{ member | title }}</option>
+                                    <option value="{{ member }}"
+                                    {% if request.user == member %}selected{% endif %}
+                                    >{{ member | title }}</option>
                                 {% endfor %}
                             </select>
                         </div>
