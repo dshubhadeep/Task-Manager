@@ -29,6 +29,9 @@ def create_task(request):
 
         task.save()
 
+        if len(assignees) == 0:
+            task.assigned_to.add(request.user)
+
         for assignee in assignees:
             task.assigned_to.add(User.objects.get(username=assignee))
 

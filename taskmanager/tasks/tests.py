@@ -74,7 +74,8 @@ class ViewsTestClass(TestCase):
         Create task after login
         """
         self.client.post(self.login_url, self.credentials, follow=True)
-        response = self.client.post(self.create_task_url, data=test_task, follow=True)
+        response = self.client.post(
+            self.create_task_url, data=test_task, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'home.html')
         self.client.logout()
@@ -84,7 +85,8 @@ class ViewsTestClass(TestCase):
         """
         test_task['team_id'] = 2
         self.client.post(self.login_url, self.credentials, follow=True)
-        response = self.client.post(self.create_task_url, data=test_task, follow=True)
+        response = self.client.post(
+            self.create_task_url, data=test_task, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'home.html')
         self.client.logout()
@@ -92,13 +94,16 @@ class ViewsTestClass(TestCase):
         """
         Create task with team
         """
-        test_team = Team.objects.create(team_name='Team 1')
+        test_team = Team.objects.create(
+            team_name='Team 1')
+        test_team.members.add(self.test_user)
         test_team_id = test_team.id
 
         test_task['title'] = 'Task 2'
         test_task['team_id'] = test_team_id
         self.client.post(self.login_url, self.credentials, follow=True)
-        response = self.client.post(self.create_task_url, data=test_task, follow=True)
+        response = self.client.post(
+            self.create_task_url, data=test_task, follow=True)
 
         task = Task.objects.get(title='Task 2')
 
@@ -331,7 +336,8 @@ class ViewsTestClass(TestCase):
 
         url = reverse('tasks:comment', args=[task_id])
 
-        response = self.client.post(url, {'comment': 'This is a comment'}, follow=True)
+        response = self.client.post(
+            url, {'comment': 'This is a comment'}, follow=True)
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'detail.html')
         self.client.logout()
